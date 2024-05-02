@@ -6,8 +6,6 @@ import { format, parseISO } from "date-fns";
 import Container from "./components/Container";
 import { convertKelvinToCelsius } from "@/utils/covertKelvinToCelsius";
 
-// https://api.openweathermap.org/data/2.5/forecast?q=Forssa&appid=c338c3c4a408f8aa62c5c8af3e7ebd9f&cnt=56
-
 interface WeatherDetail {
   dt: number;
   main: {
