@@ -10,6 +10,7 @@ import { getDayOrNight } from "@/utils/getDayOrNight";
 import ForecastWeatherDetails from "./components/ForecastWeatherDetails";
 import { metersToKilometers } from "@/utils/metersToKilometers";
 import { covertWindSpeed } from "@/utils/converWindSpeed";
+import WeatherDetails from "./components/WeatherDetails";
 
 interface WeatherDetail {
   dt: number;
@@ -78,7 +79,21 @@ export default function Home() {
   );
 
   const todayData = data?.list[0];
-  const sevenDaysData = data?.list.slice(0, 7);
+  const uniqueDates = [
+    ...new Set(
+      data?.list.map(
+        (entry) => new Date(entry.dt * 1000).toISOString().split("T")[0]
+      )
+    ),
+  ];
+
+  const firstDataForEachDate = uniqueDates.map((date) => {
+    return data?.list.find((entry) => {
+      const entryDate = new Date(entry.dt * 1000).toISOString().split("T")[0];
+      const entryTime = new Date(entry.dt * 1000).getHours();      
+      return entryDate === date && entryTime >= 6;
+    })
+  })
 
   if (isLoading)
     return (
@@ -156,7 +171,7 @@ export default function Home() {
               />
             </Container>
             <Container className="bg-yellow-300/80 px-6 gap-4 justify-between overflow-x-auto">
-              <ForecastWeatherDetails
+              <WeatherDetails
                 visibility={metersToKilometers(todayData?.visibility ?? 10000)}
                 humidity={`${todayData?.main.humidity}%`}
                 windSpeed={covertWindSpeed(todayData?.wind.speed ?? 1.9)}
@@ -177,6 +192,31 @@ export default function Home() {
         {/* 7 days forcast data */}
         <section className="flex w-full flex-col gap-4">
           <p className="text-2xl">Forcast (7 days)</p>
+          {firstDataForEachDate.map((d, i) => (            
+            <ForecastWeatherDetails
+              key={i}
+              weatherIcon={d?.weather[0].icon ?? "01d"}
+              date={format(parseISO(d?.dt_txt ?? ""), "dd.MM")}
+              day={format(parseISO(d?.dt_txt ?? ""), "EEEE")}
+              temp={d?.main.temp ?? 0}
+              feels_like={d?.main.feels_like ?? 0}
+              temp_min={d?.main.temp_min ?? 0}
+              temp_max={d?.main.temp_max ?? 0}
+              description={d?.weather[0].description ?? ""}
+              visibility={metersToKilometers(d?.visibility ?? 10000)}
+              humidity={`${d?.main.humidity}%`}
+              windSpeed={covertWindSpeed(d?.wind.speed ?? 1.9)}
+              airPressure={`${d?.main.pressure} hPa`}
+              sunrise={format(
+                fromUnixTime(data?.city.sunrise ?? 1702949452),
+                "H:mm"
+              )}
+              sunset={format(
+                fromUnixTime(data?.city.sunrise ?? 1702949452),
+                "H:mm"
+              )}
+            />
+          ))}
         </section>
       </main>
     </div>

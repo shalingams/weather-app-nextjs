@@ -1,67 +1,45 @@
 import React from 'react'
-import { LuEye, LuSunrise, LuSunset } from 'react-icons/lu';
-import { FiDroplet } from 'react-icons/fi';
-import { MdAir } from 'react-icons/md';
-import { ImMeter } from 'react-icons/im';
+import Container from './Container';
+import WeatherIcon from './WeatherIcon';
+import WeatherDetails, { WeatherDetailsProps } from './WeatherDetails';
+import { convertKelvinToCelsius } from '@/utils/covertKelvinToCelsius';
 
-export interface WeatherDetailsProps {
-  visibility: string;
-  humidity: string;
-  windSpeed: string;
-  airPressure: string;
-  sunrise: string;
-  sunset: string;
+export interface ForecastWeatherDetails extends WeatherDetailsProps {
+  weatherIcon: string;
+  date: string;
+  day: string;
+  temp: number;
+  feels_like: number;
+  temp_min: number;
+  temp_max: number;
+  description: string;
 }
 
-export default function ForecastWeatherDetails(props: WeatherDetailsProps){
+export default function ForecastWeatherDetails(props: ForecastWeatherDetails) {
   return (
-    <>
-      <SingleWeatherDetail
-        information={"Visibility"}
-        icon={<LuEye />}
-        value={props.visibility}
-      />
-      <SingleWeatherDetail
-        information={"Humidity"}
-        icon={<FiDroplet />}
-        value={props.humidity}
-      />
-      <SingleWeatherDetail
-        information={"Wind Speed"}
-        icon={<MdAir />}
-        value={props.windSpeed}
-      />
-      <SingleWeatherDetail
-        information={"Air Pressure"}
-        icon={<ImMeter />}
-        value={props.airPressure}
-      />
-      <SingleWeatherDetail
-        information={"Sunrise"}
-        icon={<LuSunrise />}
-        value={props.sunrise}
-      />
-      <SingleWeatherDetail
-        information={"Sunset"}
-        icon={<LuSunset />}
-        value={props.sunset}
-      />
-    </>
+    <Container className="gap-4">
+      <section className="flex gap-4 items-center px-4">
+        <div>
+          <WeatherIcon iconName={props.weatherIcon} />
+          <p>{props.date}</p>
+          <p className="text-sm">{props.day}</p>
+        </div>
+
+        <div className="flex flex-col px-4">
+          <span className="text-5xl">
+            {convertKelvinToCelsius(props.temp ?? 0)}°
+          </span>
+          <p className="text-xs space-x-1 whitespace-nowrap">
+            <span>Feels Like</span>
+            <span>{convertKelvinToCelsius(props.feels_like ?? 0)}°</span>
+          </p>
+          <p className="capitalize">{props.description}</p>
+        </div>
+      </section>
+
+      <section className="overflow-x-auto flex justify-between gap-4 px-4 w-full pr-10">
+        <WeatherDetails {...props} />
+      </section>
+    </Container>
   );
 };
-
-export interface SingleWeatherDetailProps {
-  information: string;
-  icon: React.ReactNode;
-  value: string;
-}
-
-function SingleWeatherDetail(props: SingleWeatherDetailProps) {
-  return (
-    <div className="flex flex-col justify-between gap-2 items-center text-xs font-semibold text-black/80">
-      <p className="whitespace-nowrap">{props.information}</p>
-      <div className="text-3xl">{props.icon}</div>
-      <p>{ props.value }</p>
-    </div>
-  );
-}
