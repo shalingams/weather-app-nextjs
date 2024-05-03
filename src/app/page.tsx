@@ -2,11 +2,14 @@
 import Navbar from "./components/Navbar";
 import { useQuery } from "react-query";
 import axios from "axios";
-import { format, parseISO } from "date-fns";
+import { format, fromUnixTime, parseISO } from "date-fns";
 import Container from "./components/Container";
 import { convertKelvinToCelsius } from "@/utils/covertKelvinToCelsius";
 import WeatherIcon from "./components/WeatherIcon";
 import { getDayOrNight } from "@/utils/getDayOrNight";
+import ForecastWeatherDetails from "./components/ForecastWeatherDetails";
+import { metersToKilometers } from "@/utils/metersToKilometers";
+import { covertWindSpeed } from "@/utils/converWindSpeed";
 
 interface WeatherDetail {
   dt: number;
@@ -84,7 +87,6 @@ export default function Home() {
       </div>
     );
 
-  console.log(data);
   return (
     <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
       <Navbar />
@@ -143,18 +145,32 @@ export default function Home() {
           </div>
           <div className="flex gap-4">
             <Container className="w-fit justify-center flex-col px-4 items-center">
-              <p className="capitalize text-center">{todayData?.weather[0].description}</p>
+              <p className="capitalize text-center">
+                {todayData?.weather[0].description}
+              </p>
               <WeatherIcon
                 iconName={getDayOrNight(
-                  todayData?.weather[0].icon ?? '',
-                  todayData?.dt_txt ?? ''
+                  todayData?.weather[0].icon ?? "",
+                  todayData?.dt_txt ?? ""
                 )}
               />
             </Container>
-            <Container
-              className="bg-yellow-300/80 px-6 gap-4 justify-between overflow-x-auto">
-              
-             </Container>
+            <Container className="bg-yellow-300/80 px-6 gap-4 justify-between overflow-x-auto">
+              <ForecastWeatherDetails
+                visibility={metersToKilometers(todayData?.visibility ?? 10000)}
+                humidity={`${todayData?.main.humidity}%`}
+                windSpeed={covertWindSpeed(todayData?.wind.speed ?? 1.9)}
+                airPressure={`${todayData?.main.pressure} hPa`}
+                sunrise={format(
+                  fromUnixTime(data?.city.sunrise ?? 1702949452),
+                  "H:mm"
+                )}
+                sunset={format(
+                  fromUnixTime(data?.city.sunrise ?? 1702949452),
+                  "H:mm"
+                )}
+              />
+            </Container>
           </div>
         </section>
 
