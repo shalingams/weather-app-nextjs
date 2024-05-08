@@ -210,7 +210,7 @@ export default function Home() {
                 </Container>
                 <Container className="bg-yellow-300/80  px-6 gap-4 justify-between overflow-x-auto">
                   <WeatherDetails
-                    visability={metersToKilometers(
+                    visibility={metersToKilometers(
                       firstData?.visibility ?? 10000
                     )}
                     airPressure={`${firstData?.main.pressure} hPa`}
@@ -249,7 +249,7 @@ export default function Home() {
                     fromUnixTime(data?.city.sunset ?? 1702517657),
                     "H:mm"
                   )}
-                  visability={`${metersToKilometers(d?.visibility ?? 10000)} `}
+                  visibility={`${metersToKilometers(d?.visibility ?? 10000)} `}
                   windSpeed={`${convertWindSpeed(d?.wind.speed ?? 1.64)} `}
                 />
               ))}
